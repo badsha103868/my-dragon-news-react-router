@@ -8,16 +8,19 @@ import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndP
 const AuthProvider = ({ children }) => {
 //  user state declare
   const [user, setUser] = useState(null);
-  console.log(user)
+  const [loading, setLoading] = useState(true)
+  console.log(user , loading)
   
   // register function/create user
    const createUser = (email, password)=>{
+           setLoading(true)
         return createUserWithEmailAndPassword(auth ,email, password)
    }
 
 
   //  signIn function
   const signIn = (email, password)=>{
+    setLoading(true)
     return signInWithEmailAndPassword(auth, email, password)
   }
    
@@ -31,6 +34,7 @@ const AuthProvider = ({ children }) => {
   useEffect(()=>{
    const unsubscribe =  onAuthStateChanged(auth, (currentUser)=>{
        setUser(currentUser)
+       setLoading(false)
     });
     return ()=>{
       unsubscribe()
@@ -46,6 +50,8 @@ const authData= {
   createUser,
   logOut,
   signIn,
+  setLoading,
+  loading
 }
 
  
