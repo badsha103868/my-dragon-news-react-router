@@ -1,11 +1,17 @@
-import React, { use }  from 'react';
-import { Link } from 'react-router';
+import React, { use, useState }  from 'react';
+import { Link, useLocation, useNavigate } from 'react-router';
 import { AuthContext } from '../Provider/AuthProvider';
 
 
 const Login = () => {
+  // error state
+  const [error, setError] = useState("")
    
     const { signIn } = use(AuthContext)
+
+    const location = useLocation()
+    const navigate = useNavigate()
+    console.log(location)
 
    const handleLogIn =(e)=>{
          e.preventDefault()
@@ -19,10 +25,13 @@ const Login = () => {
             const user = result.user
             console.log(user)
             alert("Log in successfully")
-          })
+
+     navigate(`${location.state? location.state : '/'}`) })
+
           .catch(error =>{
-            console.log(error.message)
-             alert(error.message)
+            // console.log(error.message)
+            //  alert(error.message)
+            setError(error.message)
           })
    }
 
@@ -38,19 +47,26 @@ const Login = () => {
           type="email" 
           className="input"
           name='email'
-           placeholder="Email" />
+           placeholder="Email" required />
            {/* password */}
           <label className="label">Password</label>
           <input 
           type="password" 
           className="input" 
           name='password'
-          placeholder="Password" />
+          placeholder="Password" required />
 
           {/* Forget password */}
           <div><a className="link link-hover">Forgot password?</a></div>
+
           {/* login button */}
           <button type="submit" className="btn btn-neutral mt-4">Login</button>
+
+          {/* error showing  */}
+          {
+            error && <p className='text-secondary text-xs'>{error}</p>
+
+          }
         </fieldset>
         <p className='font-semibold text-center mt-5'>Dont’t Have An Account ? <Link className='text-secondary' to='/auth/register/'>Register</Link></p>
       </form>

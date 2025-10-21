@@ -1,16 +1,30 @@
-import React, { use } from 'react';
-import { Link } from 'react-router';
+import React, { use, useState } from 'react';
+import { Link, useNavigate } from 'react-router';
 import { AuthContext } from '../Provider/AuthProvider';
 
 const Register = () => {
 
-    const { createUser, setUser }=use(AuthContext)
-  
+    const { createUser, setUser, updateUser }=use(AuthContext)
+   const [nameError, setNameError] = useState("")
+
+    //  use navigation
+    const navigate = useNavigate()
+
   const handleRegister=(e)=>{
+    // name validation
+    
     e.preventDefault()
     console.log("form submitted", e.target)
     const form = e.target
     const name = form.name.value;
+
+    if(name.length < 5){
+      setNameError("Name should be more than 5 character")
+      return;
+    }
+    else{
+      setNameError("")
+    }
     const photoUrl = form.photoUrl.value;
     const email = form.email.value;
     const password = form.password.value;
@@ -18,10 +32,24 @@ const Register = () => {
    
     // register page ar create user k call
    createUser(email, password)
+
    .then(result=>{
     const user= result.user
+    updateUser({
+      displayName: name,
+      photoURL: photoUrl
+    }).then(() => {
+      setUser({...user,displayName: name,
+      photoURL: photoUrl});
+      // navigate kore home page a patano
+      navigate("/")
+   })
+   .catch((error) => {
+     console.log(error.message)
+     setUser(user)
+    });
     // console.log(user)
-    setUser(user)
+    
    })
    .catch(error=>{
     console.log(error.message)
@@ -48,6 +76,9 @@ const Register = () => {
           className="input" 
           name='name'
           placeholder="Your Name" required />
+          {
+            nameError && <p className='text-secondary text-xs'>{nameError}</p>
+          }
           
           {/* Photo Url */}
           <label className="label">Photo Url</label>
